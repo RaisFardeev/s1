@@ -1,0 +1,9 @@
+flask
+flask_session
+werkzeug
+flask_bcrypt
+datetime
+sqlalchemy
+flask_wtf
+wtforms
+flask_sqlalchemy
