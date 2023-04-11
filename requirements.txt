@@ -7,3 +7,5 @@ sqlalchemy
 flask_wtf
 wtforms
 flask_sqlalchemy
+flask_bcrypt
+flask_socketio
