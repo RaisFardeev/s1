@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+{% block title %}
+Смена почты
+{% endblock %}
+{% block content %}
+<form method="POST" action="{{ url_for('change_email') }}">
+    <div>
+    <label>
+        <input type="text" placeholder="new email" name="email">
+    </label>
+    </div>
+    <div>
+    <input type="submit" value="Войти">
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+
+{% block title %}
+Добавить денег
+{% endblock %}
+{%  block style %}
+{%  endblock %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+<label>
+            <input id="number" type="number" name="number" placeholder="Количество денег"
+                   class="form-control"/>
+        </label></div>
+        <input type="submit" value="Отправить">
+    </form>
+{% endblock %}

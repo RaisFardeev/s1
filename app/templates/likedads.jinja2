@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+{% block title %}Избранные Объявления{% endblock %}
+{%  block style %}
+        <link href="{{ '/static/styles/ads.css' }}" rel="stylesheet" type="text/css">
+{%  endblock %}
+{% block content %}
+    <form action="" method="get">
+        <input type="text" name="search" placeholder="Поиск..."
+               value="{{ search }}"
+               class="form-control">
+        <button class="btn btn-primary">Найти</button>
+    </form>
+    {% for ad in ads %}
+      <div class='row-col' ><img src="{{ ad['p'] }}" class="" alt="">
+          <a href="{{ url_for('detail_view', ad_id=ad['id']) }}"><p>{{ad['an']}}</p></a>
+          <p>Цена:{{ad['price']}}</p>
+          <p>Продавец:{{ad['un']}}</p></div>
+  {% endfor %}
+
+
+{% endblock %}

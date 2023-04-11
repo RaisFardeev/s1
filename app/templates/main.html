@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{{ '/static/styles/main.css' }}" rel="stylesheet" type="text/css">
+    {% block style %}
+    {% endblock %}
+</head>
+<body>
+<div id="header"><img src="/static/uploads/avita.jpg" alt="" width="170" height="60">
+{% if session.get('auth') %}
+
+<p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('ads_view') }}">Все объявления</a></button>
+    </p>
+<p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('myads_view') }}">Мои объявления</a></button>
+    </p>
+<p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('likedads_view') }}">Избранное</a></button>
+    </p>
+<p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('boughtads_view') }}">Купленные</a></button>
+    </p>
+<p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('add_money') }}">Добавить деньги</a></button>
+    </p>
+<p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('change_email') }}">Сменить почту</a></button>
+    </p>
+    <p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('logout') }}">Выйти</a></button>
+    </p>
+{% else %}
+ <p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('login') }}">Войти</a></button>
+    </p>
+    <p class="form-group">
+        <button type="submit" class="btn btn-primary"><a href="{{ url_for('signup') }}">Зарегистрироваться</a></button>
+    </p>
+{% endif %}
+</div>
+<h1>`</h1>
+{% block content %}
+{% endblock %}
+</body>
+</html>

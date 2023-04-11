@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+{% block title %}
+<h1>Avita</h1>
+<h2>Регистрация</h2>
+{% endblock %}
+{% block content %}
+    <form method="POST" action="{{ url_for('signup') }}">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.email.label }} {{ form.email(class="form-control") }}
+            {% for error in form.email.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+{% endblock %}

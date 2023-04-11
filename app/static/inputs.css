@@ -1,0 +1,7 @@
+body{background-color: #3a0877;
+    font-size: 22px;
+    font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;}
+#header{background-color: #2f075f;
+margin-bottom: 10px;}
+#header img{float: left}
+#header p{float: left}
