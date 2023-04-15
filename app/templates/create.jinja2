@@ -6,34 +6,8 @@
 {%  block style %}
 {%  endblock %}
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-      <label for="name">Название</label>
-          <div><label>
-            <input type="text" name="name"
-                   placeholder="Название" class="form-control"
-                   value="{{ request.form['name'] }}"/>
-        </label>
-        </div>
-        <label for="description">Описание</label>
-        <div><label>
-<textarea name="description" placeholder="Описание"
-          class="form-control">{{ request.form['description'] }}</textarea>
-        </label></div>
-              <label for="category">Категория</label>
-          <div><label>
-            <input type="text" name="category"
-                   placeholder="Категория" class="form-control"
-                   value="no category"/>
-        </label>
-        </div>
-        <label for="price">Цена</label>
-        <div><label>
-            <input type="number" name="price" placeholder="Цена"
-                   class="form-control" value="{{ request.form['price'] }}"/>
-        </label></div>
-        <label for="file_upload">Файл</label>
-        <input name="file_upload" class="input-field" type="file">
-
-        <input type="submit" value="Отправить">
+       <form method="POST" action="{{ url_for('signup') }}">
+        {{ form.csrf_token }}
+        {{ form.submit(class="btn btn-primary") }}
     </form>
 {% endblock %}

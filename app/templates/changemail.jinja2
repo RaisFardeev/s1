@@ -3,14 +3,26 @@
 Смена почты
 {% endblock %}
 {% block content %}
-<form method="POST" action="{{ url_for('change_email') }}">
-    <div>
-    <label>
-        <input type="text" placeholder="new email" name="email">
-    </label>
-    </div>
-    <div>
-    <input type="submit" value="Войти">
-    </div>
-</form>
+    <form method="POST" action="{{ url_for('signup') }}">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.email.label }} {{ form.email(class="form-control") }}
+            {% for error in form.email.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.old_password.label }} {{ form.old_password(class="form-control") }}
+            {% for error in form.old_password.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.new_password.label }} {{ form.new_password(class="form-control") }}
+            {% for error in form.new_password.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
 {% endblock %}

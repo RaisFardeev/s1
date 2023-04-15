@@ -4,42 +4,8 @@
 {% endblock %}
 
 {% block content %}
-<form method="post">
-    <div class="form-group">
-        <label for="name">Название</label>
-        <label>
-            <input type="text" name="name" placeholder="Название объявления"
-                   class="form-control"
-                   value="{{ ad['name'] }}">
-        </label>
-    </div>
-
-    <div class="form-group">
-        <label for="description">Описание</label>
-        <label>
-<textarea name="description" placeholder="Описание объявления"
-          class="form-control">{{ ad['description'] }}</textarea>
-        </label>
-    </div>
-
-        <div class="form-group">
-        <label for="price">Цена</label>
-            <label>
-                <input type="number" name="price" placeholder="Цена"
-                       class="form-control"
-                       value="{{ ad['price'] }}">
-            </label>
-        </div>
-              <label for="category">Категория</label>
-          <div><label>
-            <input type="text" name="category"
-                   placeholder="Категория" class="form-control"
-                   value="{{ ad['category'] }}"/>
-        </label>
-        </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Подтвердить изменения</button>
-    </div>
-</form>
-<hr>
+    <form method="POST" action="{{ url_for('signup') }}">
+        {{ form.csrf_token }}
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
 {% endblock %}

@@ -4,24 +4,20 @@
 <h2>Вход</h2>
 {% endblock %}
 {% block content %}
-<form method="post" action="{{ url_for('login') }}">
-    {{ form.csrf_token }}
-    <div class="form-group">
-      {{ form.email.label }}
-      {{ form.email(class="form-control") }}
-      {% for error in form.email.errors %}
-        <span class="invalid-feedback d-block">{{ error }}</span>
-      {% endfor %}
-    </div>
-    <div class="form-group">
-      {{ form.password.label }}
-      {{ form.password(class="form-control") }}
-      {% for error in form.password.errors %}
-        <span class="invalid-feedback d-block">{{ error }}</span>
-      {% endfor %}
-    </div>
-    <div class="form-group">
-      {{ form.submit(class="btn btn-primary") }}
-    </div>
-  </form>
+    <form method="POST" action="{{ url_for('signup') }}">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.email.label }} {{ form.email(class="form-control") }}
+            {% for error in form.email.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.password.label }} {{ form.password(class="form-control") }}
+            {% for error in form.password.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
 {% endblock %}
