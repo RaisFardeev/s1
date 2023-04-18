@@ -6,7 +6,7 @@
         <link href="{{ '/static/styles/ads.css' }}" rel="stylesheet" type="text/css">
 {%  endblock %}
 {% block content %}
-    <div id="b">{{ user['name'] }},Ваш баланс:{{ user['balance'] }}</div>
+    <div id="b">{{ user.name }},Ваш баланс:{{ user.balance }}</div>
     <div class="form-group">
         <button type="submit" class="btn btn-primary"><a href="{{ url_for('ad_create') }}">Создать объявление</a></button>
     </div>
@@ -14,8 +14,8 @@
         <div class="alert alert-danger">{{ message }}</div>
     {% endfor %}
     {% for ad in ads %}
-      <div class="row-col"><img src="{{ ad['p'] }}" class="" alt="">
-          <a href="{{ url_for('detail_view', ad_id=ad['id']) }}"><p>{{ad['name']}}</p></a>
-          <p>Цена:{{ad['price']}}</p></div>
+      <div class="row-col"><img src="{{ ad.p }}" class="" alt="">
+          <a href="{{ url_for('detail_view', ad_id=ad.id) }}"><p>{{ad.name}}</p></a>
+          <p>Цена:{{ad.price}}</p></div>
   {% endfor %}
 {% endblock %}

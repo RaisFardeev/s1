@@ -10,7 +10,7 @@
         <div class="alert alert-danger">{{ message }}</div>
     {% endfor %}
     {% for ad in ads %}
-      <div class="row-col"><img src="{{ '/' + ad['p'] }}" class="" alt="">
-          <a href="{{ url_for('detail_view', ad_id=ad['id']) }}"><p>{{ad['name']}}</p></a></div>
+      <div class="row-col"><img src="{{ '/' + ad.p }}" class="" alt="">
+          <a href="{{ url_for('detail_view', ad_id=ad.id) }}"><p>{{ad.name}}</p></a></div>
   {% endfor %}
 {% endblock %}

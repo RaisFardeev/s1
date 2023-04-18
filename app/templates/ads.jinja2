@@ -12,11 +12,11 @@
         <button class="btn btn-primary">Найти</button>
     </form>
     {% for ad in ads %}
-      <div class='row-col' ><img src="{{ ad['p'] }}" class="" alt="">
-          <a href="{{ url_for('detail_view', ad_id=ad['id']) }}"><p>{{ad['an']}}</p></a>
-          <p>Цена:{{ad['price']}}</p>
-          <p>Категория:{{ ad['category'] }}</p>
-          <p>Продавец:{{ad['un']}}</p></div>
+      <div class='row-col' ><img src="{{ ad.p }}" class="" alt="">
+          <a href="{{ url_for('detail_view', ad_id=ad.id) }}"><p>{{ad.an}}</p></a>
+          <p>Цена:{{ad.price}}</p>
+          <p>Категория:{{ ad.category }}</p>
+          <p>Продавец:{{ad.un}}</p></div>
   {% endfor %}
 
 
