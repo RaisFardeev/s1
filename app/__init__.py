@@ -5,7 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_socketio import SocketIO
-from comments import MyWebSocket
+from .comments import MyWebSocket
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'database.db')
@@ -23,7 +24,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(seconds=3600*24*30)
 db = SQLAlchemy(app)
 Session(app)
 MyWebSocket(app)
-
+from . import routes, models
 # database creation
 with app.app_context():
     db.create_all()
