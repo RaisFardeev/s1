@@ -1,11 +1,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from . import db
 
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(20), nullable=False)
@@ -14,7 +12,7 @@ class User(Base):
     balance = Column(Integer, default=0)
 
 
-class Ad(Base):
+class Ad(db.Model):
     __tablename__ = 'ads'
     id = Column(Integer, primary_key=True, autoincrement=True)
     creator_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
@@ -28,20 +26,20 @@ class Ad(Base):
     creator = relationship('User', backref='ads')
 
 
-class Photo(Base):
+class Photo(db.Model):
     __tablename__ = 'photo'
     ad_id = Column(Integer, ForeignKey('ads.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     path = Column(String, nullable=False)
     ad = relationship('Ad', backref='photos')
 
 
-class LikedAd(Base):
+class LikedAd(db.Model):
     __tablename__ = 'liked_ads'
     ad_id = Column(Integer, ForeignKey('ads.id', ondelete='CASCADE'), primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
 
 
-class BoughtAd(Base):
+class BoughtAd(db.Model):
     __tablename__ = 'bought_ads'
-    ad_id = Column(Integer, ForeignKey('ads.id', ondelete='CASCADE'), unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), unique=True, nullable=False)
+    ad_id = Column(Integer, ForeignKey('ads.id', ondelete='CASCADE'), primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True, nullable=False)
