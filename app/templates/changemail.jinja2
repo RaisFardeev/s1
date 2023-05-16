@@ -3,7 +3,7 @@
 Смена почты
 {% endblock %}
 {% block content %}
-    <form method="POST" action="{{ url_for('signup') }}">
+    <form method="POST" action="">
         {{ form.csrf_token }}
         <div class="form-group">
             {{ form.email.label }} {{ form.email(class="form-control") }}
@@ -18,10 +18,13 @@
             {% endfor %}
         </div>
         <div class="form-group">
-            {{ form.new_password.label }} {{ form.new_password(class="form-control") }}
-            {% for error in form.new_password.errors %}
+            {{ form.new_password1.label }} {{ form.new_password1(class="form-control") }}
+            {% for error in form.new_password1.errors %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.new_password2.label }} {{ form.new_password2(class="form-control") }}
         </div>
         {{ form.submit(class="btn btn-primary") }}
     </form>

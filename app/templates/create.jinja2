@@ -6,8 +6,23 @@
 {%  block style %}
 {%  endblock %}
 {% block content %}
-       <form method="POST" action="{{ url_for('signup') }}">
+       <form method="POST" action="" enctype="multipart/form-data">
         {{ form.csrf_token }}
+           <div class="form-group">
+            {{ form.name.label }} {{ form.name(class="form-control") }}
+        </div>
+           <div class="form-group">
+            {{ form.description.label }} {{ form.description(class="form-control") }}
+        </div>
+           <div class="form-group">
+            {{ form.category.label }} {{ form.category(class="form-control") }}
+        </div>
+           <div class="form-group">
+            {{ form.price.label }} {{ form.price(class="form-control") }}
+        </div>
+           <div class="form-group">
+            {{ form.file_upload.label }} {{ form.file_upload(class="form-control") }}
+        </div>
         {{ form.submit(class="btn btn-primary") }}
     </form>
 {% endblock %}

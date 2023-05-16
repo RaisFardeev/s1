@@ -16,7 +16,7 @@
 <div class="form-group">
         <button type="submit" class="btn btn-primary"><a href="{{ url_for('ad_edit',ad_id=ad.id) }}">Редактировать</a></button>
     </div>
-    {% if ad['preordered'] %}
+    {% if ad.preordered %}
         <div class="form-group">
         <button type="submit" class="btn btn-primary"><a href="{{ url_for('cancel_preorder',ad_id=ad.id) }}">Отменить предзаказ</a></button>
         </div>
@@ -26,8 +26,8 @@
     <button type="submit" class="btn btn-primary"><a href="{{ url_for('ad_like',ad_id=ad.id) }}">Добавить в избранное</a></button>
     <button type="submit" class="btn btn-primary"><a href="{{ url_for('ad_buy',ad_id=ad.id) }}">Купить</a></button>
 {% endif %}
-    <h2>{{ ad['name'] }}</h2>
-    <img src="{{ '/' + ad.path }}" id="photo" alt="" width="200px" height="200px">
+    <h2>{{ ad.name }}</h2>
+    <img src="{{ ad.path[3::] }}" id="photo" alt="" width="200px" height="200px">
     <div>Дата создания:{{ad.uploaded}}</div>
     <div>Описание:{{ad.description}}</div>
     <div>Цена:{{ad.price}}</div>
