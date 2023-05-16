@@ -1,5 +1,5 @@
 env
 .idea
 *.db
-app/uploads
+app/static/uploads
 flask_session
