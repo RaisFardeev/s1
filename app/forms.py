@@ -1,49 +1,49 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField, TextAreaField, FileField, RadioField, SubmitField
 from wtforms.validators import DataRequired, Length, NumberRange, ValidationError, Email
-
-from __init__ import bcrypt
+from . import bcrypt
 from .models import User
+from flask_wtf.file import FileAllowed
 
 
 class RegistrationForm(FlaskForm):
     name = StringField('Имя',
-                       validators=[DataRequired(), Length(max=20)],
+                       validators=[DataRequired(), Length(min=1, max=20)],
                        render_kw={"placeholder": "Введите имя"})
     email = StringField('Email',
-                        validators=[DataRequired(), Email(), Length(max=30)],
+                        validators=[DataRequired(), Email(), Length(min=10, max=30)],
                         render_kw={"placeholder": "Введите email"})
     password1 = PasswordField('Пароль',
-                              validators=[DataRequired(), Length(max=20)],
+                              validators=[DataRequired(), Length(min=1, max=20)],
                               render_kw={"placeholder": "Введите пароль"})
     password2 = PasswordField('Повторите пароль',
-                              validators=[DataRequired(), Length(max=20)],
+                              validators=[DataRequired(), Length(min=1, max=20)],
                               render_kw={"placeholder": "Введите пароль еще раз"})
     submit = SubmitField('Зарегестрироваться')
 
-    def validate(self, **kwargs):
+    def validate_(self, **kwargs):
         user = User.query.filter_by(email=self.email.data).first()
         if user is not None:
-            self.email.errors.append('Пользователь с таким адресом уже существует')
+            self.email.errors += 'Пользователь с таким адресом уже существует'
         if self.password1.data != self.password2.data:
-            self.password1.errors.append('Пароли не совпадают')
+            self.password1.errors += 'Пароли не совпадают'
 
 
 class LoginForm(FlaskForm):
     email = StringField('Email',
-                        validators=[DataRequired(), Email(), Length(max=30)],
+                        validators=[DataRequired(), Email(), Length(min=10, max=30)],
                         render_kw={"placeholder": "Введите email"})
     password = PasswordField('Password',
-                             validators=[DataRequired(), Length(max=20)],
+                             validators=[DataRequired(), Length(min=1, max=20)],
                              render_kw={"placeholder": "Введите пароль"})
     submit = SubmitField('Log In')
 
-    def validate(self, **kwargs):
+    def validate_(self, **kwargs):
         user: User = User.query.filter_by(email=self.email.data).first()
         if user is None:
-            self.email.errors.append('что-то не так с адресом')
+            self.email.errors += 'что-то не так с адресом'
         if not bcrypt.check_password_hash(self.password.data, user.password):
-            self.password.errors.append('что-то не так с паролем')
+            self.password.errors += 'что-то не так с паролем'
 
 
 class AdCreateForm(FlaskForm):
@@ -59,7 +59,7 @@ class AdCreateForm(FlaskForm):
                          validators=[DataRequired(), NumberRange(min=0)],
                          render_kw={"placeholder": "Введите цену"})
     file_upload = FileField('Файл',
-                            validators=[DataRequired()])  # TODO: добавить возможность посмотреть что за файл отправили
+                            validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])  # TODO: добавить возможность посмотреть что за файл отправили
     submit = SubmitField('Создать')
 
 
@@ -78,12 +78,6 @@ class AdEditForm(FlaskForm):
     file_upload = FileField('Файл',
                             validators=[DataRequired()])
     submit = SubmitField('Изменить')
-
-    def populate_obj(self, ad):
-        self.name.data = ad.name
-        self.description.data = ad.description
-        self.category.data = ad.category
-        self.price.data = ad.price
 
 
 class MoneyAddForm(FlaskForm):
@@ -111,7 +105,7 @@ class EditProfileForm(FlaskForm):
                                   render_kw={"placeholder": "Введите новый пароль еще раз"})
     submit = SubmitField('Редактировать')
 
-    def validate(self, **kwargs):
+    def validate_(self, **kwargs):
         user = User.query.filter_by(email=self.email.data).first()
         if user is not None:
             self.email.errors.append('Пользователь с таким адресом уже существует')
