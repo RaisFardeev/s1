@@ -6,8 +6,11 @@
 {%  block style %}
 {%  endblock %}
 {% block content %}
-    <form method="POST" action="{{ url_for('signup') }}">
+    <form method="POST" action="">
         {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.number.label }} {{ form.number(class="form-control") }}
+        </div>
         {{ form.submit(class="btn btn-primary") }}
     </form>
 {% endblock %}
