@@ -23,7 +23,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(seconds=3600*24*30)
 
 db = SQLAlchemy(app)
 Session(app)
-MyWebSocket(app)
+socket = MyWebSocket(app)
 from . import routes, models
 # database creation
 with app.app_context():
