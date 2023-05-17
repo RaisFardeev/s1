@@ -3,3 +3,4 @@ env
 *.db
 app/static/uploads
 flask_session
+tasks
