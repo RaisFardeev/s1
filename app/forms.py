@@ -21,10 +21,12 @@ class RegistrationForm(FlaskForm):
                               render_kw={"placeholder": "Введите пароль еще раз"})
     submit = SubmitField('Зарегестрироваться')
 
-    def validate_(self, **kwargs):
+    def validate_email(self):
         user = User.query.filter_by(email=self.email.data).first()
-        if user is not None:
+        if user:
             self.email.errors += 'Пользователь с таким адресом уже существует'
+
+    def validate_password(self):
         if self.password1.data != self.password2.data:
             self.password1.errors += 'Пароли не совпадают'
 
@@ -38,8 +40,8 @@ class LoginForm(FlaskForm):
                              render_kw={"placeholder": "Введите пароль"})
     submit = SubmitField('Log In')
 
-    def validate_(self, **kwargs):
-        user: User = User.query.filter_by(email=self.email.data).first()
+    def validate_(self):
+        user = User.query.filter_by(email=self.email.data).first()
         if user is None:
             self.email.errors += 'что-то не так с адресом'
         if not bcrypt.check_password_hash(self.password.data, user.password):
@@ -59,7 +61,7 @@ class AdCreateForm(FlaskForm):
                          validators=[DataRequired(), NumberRange(min=0)],
                          render_kw={"placeholder": "Введите цену"})
     file_upload = FileField('Файл',
-                            validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])  # TODO: добавить возможность посмотреть что за файл отправили
+                            validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     submit = SubmitField('Создать')
 
 
@@ -82,7 +84,7 @@ class AdEditForm(FlaskForm):
 
 class MoneyAddForm(FlaskForm):
     number = IntegerField('Количество денег',
-                          validators=[DataRequired(), NumberRange(min=0)],
+                          validators=[DataRequired(), NumberRange(min=0, max=1000000)],
                           render_kw={"placeholder": "Введите количество денег"})
     submit = SubmitField('Добавить')
 
@@ -98,18 +100,20 @@ class EditProfileForm(FlaskForm):
                                  validators=[DataRequired(), Length(max=20)],
                                  render_kw={"placeholder": "Введите старый пароль"})
     new_password1 = PasswordField('Пароль',
-                                 validators=[Length(max=20)],
-                                 render_kw={"placeholder": "Введите новый пароль"})
+                                  validators=[Length(max=20)],
+                                  render_kw={"placeholder": "Введите новый пароль"})
     new_password2 = PasswordField('Повторите пароль',
                                   validators=[Length(max=20)],
                                   render_kw={"placeholder": "Введите новый пароль еще раз"})
     submit = SubmitField('Редактировать')
 
-    def validate_(self, **kwargs):
+    def validate_email(self):
         user = User.query.filter_by(email=self.email.data).first()
         if user is not None:
-            self.email.errors.append('Пользователь с таким адресом уже существует')
+            self.email.errors += 'Пользователь с таким адресом уже существует'
         if not bcrypt.check_password_hash(self.old_password.data, user.password):
             self.old_password.errors.append('что-то не так с паролем')
+
+    def validate_passwords(self):
         if self.new_password1.data != self.new_password2.data:
             self.new_password1.errors.append('Пароли не совпадают')
