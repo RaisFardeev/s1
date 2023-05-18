@@ -4,9 +4,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_session import Session
+from dotenv import load_dotenv
 from flask_socketio import SocketIO
-from .comments import MyWebSocket
 
+# from .comments import MyWebSocket
+
+load_dotenv()
+github_id = os.getenv("GITHUB_ID")
+github_secret = os.getenv("GITHUB_SECRET")
+vk_id = os.getenv("VK_ID")
+vk_secret = os.getenv("VK_SECRET")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'database.db')
@@ -19,12 +26,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(seconds=3600*24*30)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(seconds=3600 * 24 * 30)
 
 db = SQLAlchemy(app)
 Session(app)
-socket = MyWebSocket(app)
+# socket = MyWebSocket(app)
 from . import routes, models
+
 # database creation
 with app.app_context():
     db.create_all()
+from .utils import fill_database
+
+fill_database(app, db)
