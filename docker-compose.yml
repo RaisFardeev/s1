@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  sqlite3:
+    image: nouchka/sqlite3:latest
+    stdin_open: true
+    tty: true
+    #volumes:
+    #  - ./web/database/:/web/database/
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    #volumes:
+    #   - ./web/database/:/web/database/
+    depends_on:
+      - sqlite3
