@@ -14,7 +14,7 @@
         <div class="alert alert-danger">{{ message }}</div>
     {% endfor %}
     {% for ad in ads %}
-      <div class="row-col"><img src="{{ ad.path[3::] }}" class="" alt="">
+      <div class="row-col"><img src="{{ ad.path }}" class="" alt="">
           <a href="{{ url_for('detail_view', ad_id=ad.id) }}"><p>{{ad.name}}</p></a>
           <p>Цена:{{ad.price}}</p></div>
   {% endfor %}

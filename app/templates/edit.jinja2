@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         {{ form.csrf_token }}
         <div class="form-group">
             {{ form.name.label }} {{ form.name(class="form-control") }}

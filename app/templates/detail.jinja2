@@ -27,37 +27,8 @@
     <button type="submit" class="btn btn-primary"><a href="{{ url_for('ad_buy',ad_id=ad.id) }}">Купить</a></button>
 {% endif %}
     <h2>{{ ad.name }}</h2>
-    <img src="{{ ad.path[3::] }}" id="photo" alt="" width="200px" height="200px">
+    <img src="/{{ ad.path }}" id="photo" alt="" width="200px" height="200px">
     <div>Дата создания:{{ad.uploaded}}</div>
     <div>Описание:{{ad.description}}</div>
     <div>Цена:{{ad.price}}</div>
-    <div id="text-area">
-
-    </div>
-    <input id="msg" placeholder="Введите текст">
-    <button id="submit">Submit</button>
-    <script>
-    $(document).ready(function () {
-    let socket = io();
-    let user = ' ';
-    socket.on('connect', function () {
-            socket.emit('connect', {'ad':{{ad.id}}})
-        });
-    socket.on('recv', function (data) {
-        const area = $('#text-area');
-        var today = new Date()
-        var now = today.toLocaleString()
-        user === data.user ? area.append(`<div style='text-align: right' class='msg'><p>${now}</p>${data.msg}</div>`):area.append(`<div class='msg'><p>${data.user} ${now}</p>${data.msg}</div>`)});
-    socket.on('history', function (data) {
-        const area = $('#text-area');
-        for (let ind = 0; ind < data.length; ind++) {
-        area.append(`<div class='msg'><p>${data[ind][1]}${data[ind][2]}</p>${data[ind][0]}</div>`)}
-    });
-    $('#submit').click(function () {
-        const field = $('#msg');
-        let msg = field.val();
-        socket.emit('my_event', {'msg': msg, 'ad': {{ad.id}}})
-        field.val('')})
-})
-    </script>
 {% endblock %}

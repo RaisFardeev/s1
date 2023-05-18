@@ -13,7 +13,7 @@
     </form>
     {% for ad in ads %}
       <div class='row-col' ><img src="{{ ad.path }}" class="" alt="">
-          <a href="{{ url_for('detail_view', ad_id=ad.id) }}"><p>{{ad.name}}</p></a>
+          <a href="{{ url_for('detail_view', ad_id=ad.id) }}"><p>{{ad.an}}</p></a>
           <p>Цена:{{ad.price}}</p>
           <p>Категория:{{ ad.category }}</p>
           <p>Продавец:{{ad.un}}</p></div>
