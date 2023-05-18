@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
 from . import db
 
@@ -6,9 +6,10 @@ from . import db
 class User(db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(20), nullable=False)
+    name = Column(String(20))
     email = Column(String(30), unique=True, nullable=False)
-    password = Column(String(20), nullable=False)
+    password = Column(String(20))
+    token = Column(String(100), unique=True)
     balance = Column(Integer, default=0)
 
 
@@ -16,7 +17,7 @@ class Ad(db.Model):
     __tablename__ = 'ads'
     id = Column(Integer, primary_key=True, autoincrement=True)
     creator_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    uploaded = Column(String, nullable=False, server_default='CURRENT_TIMESTAMP')
+    uploaded = Column(DateTime, nullable=False, default=func.now())
     name = Column(String(50), nullable=False)
     description = Column(String(300), nullable=False)
     preordered = Column(Boolean, default=False)
