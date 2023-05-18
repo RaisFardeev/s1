@@ -10,3 +10,4 @@ flask-bcrypt
 flask-socketio
 email-validator
 pytest
+python-dotenv
