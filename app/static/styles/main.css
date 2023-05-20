@@ -1,13 +1,18 @@
-body{background-color: #3a0877;
+body{background-color: black;
     font-size: 22px;
     font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;}
-#header{background-color: #2f075f;
+#header{background-color: #049ae7;
 margin-bottom: 10px;}
+#end{
+margin-right: 100px;
+margin-bottom: 100px;
+color: black;
+}
 #header img{float: left}
 #header p{float: left}
 a{
     color: black;
 }
 h1{
-    color:#3a0877;
+    color:white;
 }
