@@ -3,6 +3,9 @@
 <h1>Avita</h1>
 <h2>Регистрация</h2>
 {% endblock %}
+{%  block style %}
+        <link href="{{ '/static/styles/auth.css' }}" rel="stylesheet" type="text/css">
+{%  endblock %}
 {% block content %}
     <form method="POST" action="{{ url_for('signup') }}">
         {{ form.csrf_token }}
@@ -26,4 +29,6 @@
         </div>
         {{ form.submit(class="btn btn-primary") }}
     </form>
+    <a href="{{ url_for('login_via_oauth',app='vk') }}"><img id='Vk ' src="/static/imgs/VK.png"></a>
+    <a href="{{ url_for('login_via_oauth',app='github') }}"><img id='Github ' src="/static/imgs/GitHub.png"></a>
 {% endblock %}
