@@ -21,12 +21,12 @@ class RegistrationForm(FlaskForm):
                               render_kw={"placeholder": "Введите пароль еще раз"})
     submit = SubmitField('Зарегестрироваться')
 
-    def validate_email(self):
+    def validate_email(self, *args):
         user = User.query.filter_by(email=self.email.data).first()
         if user:
             self.email.errors += 'Пользователь с таким адресом уже существует'
 
-    def validate_password(self):
+    def validate_password(self, *args):
         if self.password1.data != self.password2.data:
             self.password1.errors += 'Пароли не совпадают'
 
@@ -40,7 +40,7 @@ class LoginForm(FlaskForm):
                              render_kw={"placeholder": "Введите пароль"})
     submit = SubmitField('Log In')
 
-    def validate_(self):
+    def validate_(self, *args):
         user = User.query.filter_by(email=self.email.data).first()
         if user is None:
             self.email.errors += 'что-то не так с адресом'
@@ -78,7 +78,7 @@ class AdEditForm(FlaskForm):
                          validators=[DataRequired(), NumberRange(min=0)],
                          render_kw={"placeholder": "Введите цену"})
     file_upload = FileField('Файл',
-                            validators=[DataRequired()])
+                            validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     submit = SubmitField('Изменить')
 
 
@@ -107,13 +107,13 @@ class EditProfileForm(FlaskForm):
                                   render_kw={"placeholder": "Введите новый пароль еще раз"})
     submit = SubmitField('Редактировать')
 
-    def validate_email(self):
+    def validate_email(self, *args):
         user = User.query.filter_by(email=self.email.data).first()
         if user is not None:
             self.email.errors += 'Пользователь с таким адресом уже существует'
         if not bcrypt.check_password_hash(self.old_password.data, user.password):
             self.old_password.errors.append('что-то не так с паролем')
 
-    def validate_passwords(self):
+    def validate_passwords(self, *args):
         if self.new_password1.data != self.new_password2.data:
             self.new_password1.errors.append('Пароли не совпадают')
