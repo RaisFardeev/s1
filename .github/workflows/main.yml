@@ -26,5 +26,5 @@ jobs:
       
       - name: Run tests
         run: |
-          python app/tests/test_crud.py
-          python app/tests/test_api.py
+          pytest app/tests/test_crud.py
+          pytest app/tests/test_api.py
