@@ -11,6 +11,7 @@
         {{ form.csrf_token }}
         <div class="form-group">
             {{ form.email.label }} {{ form.email(class="form-control") }}
+        <a href="{{ url_for('reset_password_start') }}">Забыли пароль?</a>
             {% for error in form.email.errors %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}

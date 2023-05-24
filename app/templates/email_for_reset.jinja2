@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<p>Привет!</p>
+<p>Вы получили это письмо, потому что запросили сброс пароля.</p>
+<p>Для сброса пароля перейдите по следующей ссылке:</p>
+<a href="{{ url_for('reset_password_complete', token=token, _external=True) }}">Сбросить пароль</a>
+<p>Если вы не запрашивали сброс пароля, то проигнорируйте это письмо.</p>
+</body>
+</html>

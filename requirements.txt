@@ -12,3 +12,5 @@ email-validator
 pytest
 python-dotenv
 requests
+flask_mail
+uuid
