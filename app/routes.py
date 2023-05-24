@@ -1,22 +1,31 @@
 import os
 import requests
-from flask import request, render_template, url_for, redirect, flash, session, make_response#, jsonify, HttpResponse, send_from_directory
+from flask import request, render_template, url_for, redirect, session, make_response
 from . import app, db, bcrypt, \
-    github_id, github_secret, vk_id, vk_secret
+    github_id, github_secret, vk_id, vk_secret, mail, gmail_address
 from .models import Ad, BoughtAd, LikedAd, User, Photo
 from .forms import *
-from .utils import generate_link, get_token_by_code, get_user_info #GithubAuth, VkAuth
+from .utils import generate_link, get_token_by_code, get_user_info
 from werkzeug.utils import secure_filename
-
+from flask_mail import Message
+from uuid import uuid4
+from .api import api_users_get, api_ads_get
 
 url_redirect_vk = "http://127.0.0.1:5000/vk_complete"
 url_redirect_github = "http://127.0.0.1:5000/github_complete"
-#vk = VkAuth(vk_id, vk_secret, url_redirect_vk)
-#github = GithubAuth(github_id, github_secret, url_redirect_github)
 
 
 @app.route('/login_via_oauth/<string:app>')
 def login_via_oauth(app):
+    """
+    Redirects the user to the OAuth provider for authentication.
+
+    Args:
+        app (str): The OAuth provider (either 'vk' or 'github').
+
+    Returns:
+        redirect: A redirect response to the OAuth provider's authentication page.
+    """
     if app == 'vk':
         link = generate_link(url_redirect_vk, app, vk_id)
     else:
@@ -24,8 +33,17 @@ def login_via_oauth(app):
     return redirect(link)
 
 
-@app.route('/vk_complete')  # TODO: поменять endpoint
+@app.route('/vk_complete')
 def vk_auth():
+    """
+    Handles the completion of VK OAuth authentication.
+
+    Retrieves the access token and user information from VK API, and saves it in the session.
+    If the user is new, it creates a new User record in the database.
+
+    Returns:
+        redirect: A redirect response to the ads_view route.
+    """
     code = request.args.get("code")
     token, email = get_token_by_code(code, url_redirect_vk, 'vk', vk_id, vk_secret)
     name, surname = get_user_info(token, 'vk')
@@ -46,6 +64,15 @@ def vk_auth():
 
 @app.route('/github_complete')  # TODO: поменять endpoint, email
 def github_auth():
+    """
+    Handles the completion of GitHub OAuth authentication.
+
+    Retrieves the access token and user information from GitHub API, and saves it in the session.
+    If the user is new, it creates a new User record in the database.
+
+    Returns:
+        redirect: A redirect response to the ads_view route.
+    """
     code = request.args.get("code")
     token = get_token_by_code(code, url_redirect_github, 'github', github_id, github_secret)
     name, email = get_user_info(token, 'github')
@@ -73,16 +100,18 @@ def safe_mode(func):
             return func(*args, **kwargs)
         except:
             pass
+
     return wrapper
-
-
-@app.route('/')
-def rdrct_on_ads_view():
-    return redirect(url_for('ads_view'))
 
 
 @app.route("/logout", methods=['GET'])
 def logout():
+    """
+       Logs out the user by clearing the session.
+
+       Returns:
+           redirect: A redirect response to the login route.
+       """
     email = session['uemail']
     user = User.query.filter(User.email == email).first()
     token = user.token
@@ -143,7 +172,7 @@ def signup():
         name = form.name.data
         password1 = form.password1.data
         res = make_response()
-        res.set_cookie('mail', email, max_age=60*60*24*30)
+        res.set_cookie('mail', email, max_age=60 * 60 * 24 * 30)
         pw_hash = bcrypt.generate_password_hash(password1)
         user = User(email=email,
                     name=name,
@@ -156,11 +185,23 @@ def signup():
     return render_template('registration.jinja2', form=form)
 
 
+@app.route('/')
 @app.route('/ads')
 def ads_view():
-    ads = db.session.query(Ad.id, Ad.category, Ad.name.label("an"), Ad.preordered, Ad.price, Photo.path, User.name.label('un')).\
-        join(Photo, Ad.id == Photo.ad_id).\
-        join(User, User.id == Ad.creator_id).\
+    """
+       Displays the list of ads.
+
+       If the user is authenticated, it displays a list of ads from the API.
+       Otherwise, it redirects the user to the login route.
+
+       Returns:
+           redirect or render_template: A redirect response to the login route if the user is not authenticated,
+           or a template with the list of ads if the user is authenticated.
+       """
+    ads = db.session.query(Ad.id, Ad.category, Ad.name.label("an"), Ad.preordered, Ad.price, Photo.path,
+                           User.name.label('un')). \
+        join(Photo, Ad.id == Photo.ad_id). \
+        join(User, User.id == Ad.creator_id). \
         filter(Ad.preordered == 0, Ad.bought == 0).all()
     return render_template("ads.jinja2", ads=ads)
 
@@ -171,8 +212,8 @@ def myads_view():
         redirect(url_for('login'))
     uemail = session['uemail']
     user = User.query.filter(User.email == uemail).first()
-    ads = db.session.query(Ad.id, Ad.category, Ad.name, Ad.preordered, Ad.price, Photo.path).\
-        join(Photo, Ad.id == Photo.ad_id).\
+    ads = db.session.query(Ad.id, Ad.category, Ad.name, Ad.preordered, Ad.price, Photo.path). \
+        join(Photo, Ad.id == Photo.ad_id). \
         where(Ad.creator_id == user.id).all()
     return render_template("myads.jinja2", ads=ads, user=user)
 
@@ -183,8 +224,8 @@ def boughtads_view():
         redirect(url_for('login'))
     uemail = session['uemail']
     user = User.query.filter(User.email == uemail).first()
-    ads = db.session.query(Ad.id, Ad.category, Ad.name, Photo.path).\
-        join(BoughtAd, Ad.id == BoughtAd.ad_id).\
+    ads = db.session.query(Ad.id, Ad.category, Ad.name, Photo.path). \
+        join(BoughtAd, Ad.id == BoughtAd.ad_id). \
         join(Photo, Ad.id == Photo.ad_id).where(BoughtAd.user_id == user.id).all()
     return render_template("boughtads.jinja2", ads=ads)
 
@@ -195,10 +236,10 @@ def likedads_view():
         redirect(url_for('login'))
     email = session['uemail']
     user = User.query.filter(User.email == email).first()
-    ads = db.session.query(Ad.id, Ad.category, Ad.name.label('an'), Ad.price, User.name.label('un'), Photo.path).\
-        join(LikedAd, Ad.id == LikedAd.ad_id).\
-        join(Photo, Ad.id == Photo.ad_id).\
-        join(User, LikedAd.user_id == User.id).\
+    ads = db.session.query(Ad.id, Ad.category, Ad.name.label('an'), Ad.price, User.name.label('un'), Photo.path). \
+        join(LikedAd, Ad.id == LikedAd.ad_id). \
+        join(Photo, Ad.id == Photo.ad_id). \
+        join(User, LikedAd.user_id == User.id). \
         where(LikedAd.user_id == user.id).all()
     print(ads, LikedAd.query.all(), user.id)
     return render_template("likedads.jinja2", ads=ads)
@@ -223,6 +264,15 @@ def ad_like(ad_id):
 
 @app.route("/ad/create", methods=['GET', 'POST'])
 def ad_create():
+    """
+        Handles the creation of a new ad.
+
+        If the request method is GET, renders the ad creation form.
+        If the request method is POST, validates and saves the submitted form data as a new Ad record in the database.
+
+        Returns:
+            redirect or render_template: A redirect response to the ads_view route or a rendered template for the ad creation form.
+        """
     if not is_login():
         return redirect(url_for('login'))
     form = AdCreateForm()
@@ -253,7 +303,8 @@ def ad_create():
 
 @app.route("/ad/<int:ad_id>/", methods=['GET', 'POST'])
 def detail_view(ad_id):
-    ad = db.session.query(Ad.id, Ad.creator_id, Ad.name, Ad.uploaded, Ad.price, Ad.category, Ad.preordered, Ad.description, Photo.path)\
+    ad = db.session.query(Ad.id, Ad.creator_id, Ad.name, Ad.uploaded, Ad.price, Ad.category, Ad.preordered,
+                          Ad.description, Photo.path) \
         .join(Photo, Ad.id == Photo.ad_id).filter(Ad.id == ad_id).first()
     user = User.query.filter(User.email == session['uemail']).first()
     if ad is None:
@@ -265,8 +316,9 @@ def detail_view(ad_id):
 def ad_edit(ad_id):
     if is_login():
         user = User.query.filter(User.email == session['uemail']).first()
-        ad = db.session.query(Ad.id, Ad.creator_id, Ad.name, Ad.price, Ad.category, Ad.preordered, Ad.description, Photo.path)\
-        .join(Photo, Ad.id == Photo.ad_id).filter(Ad.id == ad_id).first()
+        ad = db.session.query(Ad.id, Ad.creator_id, Ad.name, Ad.price, Ad.category, Ad.preordered, Ad.description,
+                              Photo.path) \
+            .join(Photo, Ad.id == Photo.ad_id).filter(Ad.id == ad_id).first()
         if user.id == ad.creator_id:
             form = AdEditForm(
                 name=ad.name, description=ad.description, category=ad.category, price=ad.price, upload_file=ad.path)
@@ -276,10 +328,10 @@ def ad_edit(ad_id):
                 price = int(form.price.data)
                 category = form.category.data
                 file = form.file_upload
-                db.session.query(Ad).filter(Ad.id == ad_id).\
+                db.session.query(Ad).filter(Ad.id == ad_id). \
                     update(dict(name=name, description=description, price=price, category=category))
                 try:
-                    filename = file.data.filename#secure_filename(file.data.filename)
+                    filename = file.data.filename  # secure_filename(file.data.filename)
                     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     file.data.save(filepath)
                     image_path = f'{filepath}'[3::]
@@ -294,7 +346,7 @@ def ad_edit(ad_id):
     return redirect(url_for('login'))
 
 
-@app.route("/ad/<int:ad_id>/delete", methods=['POST', 'GET'])
+@app.route("/ad/<int:ad_id>/delete")
 def ad_delete(ad_id):
     if is_login():
         user = User.query.filter(User.email == session['uemail']).first()
@@ -315,14 +367,7 @@ def add_money():
         return redirect(url_for('login'))
     form = MoneyAddForm()
     user = User.query.filter(User.email == session['uemail']).first()
-    if form.validate_on_submit():
-        number = int(form.number.data)
-        new_b = user.balance + number
-        db.session.query(User).filter(User.id == user.id). \
-            update(dict(balance=new_b))
-        db.session.commit()
-        return redirect(url_for('myads_view'))
-    return render_template('addmoney.jinja2', form=form)
+    return render_template('addmoney.jinja2', form=form, user=user)
 
 
 @app.route("/ad/<int:ad_id>/buy", methods=['POST', 'GET'])
@@ -371,3 +416,37 @@ def cancel_preorder(ad_id):
             return redirect(url_for('myads_view'))
         return redirect(url_for('ads_view'))
     return redirect(url_for('login'))
+
+
+@app.route("/reset_password", methods=['POST', 'GET'])
+def reset_password_start():
+    if is_login():
+        return redirect(url_for('myads_view'))
+    form = ResetPasswordForm1()
+    if form.validate_on_submit():
+        email = form.email.data
+        token = str(uuid4())
+        session['reset_token'] = token
+        session['reset_email'] = email
+        msg = Message('Сброс пароля', sender=gmail_address,recipients=[email])
+        msg.html = render_template('email_for_reset.jinja2', token=token)
+        mail.send(msg)
+        return redirect(url_for('login'))
+    return render_template('resetpassword.jinja2', form=form)
+
+
+@app.route("/reset_password_complete", methods=['POST', 'GET'])
+def reset_password_complete():
+    if is_login():
+        return redirect(url_for('myads_view'))
+    if session['reset_token'] == request.args.get('token'):
+        form = ResetPasswordForm2()
+        if form.validate_on_submit():
+            password = bcrypt.generate_password_hash(form.password1.data)
+            email = session['reset_email']
+            db.session.query(User).filter(User.email == email). \
+                update(dict(password=password))
+            db.session.commit()
+    else:
+        return redirect(url_for('signup'))
+    return render_template('completereset.jinja2', form=form)
