@@ -6,11 +6,23 @@
 {%  block style %}
 {%  endblock %}
 {% block content %}
-    <form method="POST" action="">
-        {{ form.csrf_token }}
-        <div class="form-group">
-            {{ form.number.label }} {{ form.number(class="form-control") }}
-        </div>
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div id="balance">Ваш баланс: {{ user.balance }}</div>
+<input id="msg" type="number" placeholder="Введите сумму">
+    <button id="submitt">Submit</button>
+    <script>
+$(document).ready(function () {
+    let socket = io();
+    socket.on('recv', function (data) {
+        const area = $('#balance');
+        area.empty()
+        area.append(`Ваш баланс:${data.balance}`)})
+    $('#submitt').click(function () {
+        const field = $('#msg');
+        let number = field.val();
+        socket.emit('submit', {'number': number})
+        field.val(NaN)})
+})
+</script>
 {% endblock %}
