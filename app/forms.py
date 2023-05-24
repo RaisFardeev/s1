@@ -109,11 +109,38 @@ class EditProfileForm(FlaskForm):
 
     def validate_email(self, *args):
         user = User.query.filter_by(email=self.email.data).first()
-        if user is not None:
+        if user is not None and user.email != self.email.data:
             self.email.errors += 'Пользователь с таким адресом уже существует'
-        if not bcrypt.check_password_hash(self.old_password.data, user.password):
-            self.old_password.errors.append('что-то не так с паролем')
+        if user.password:
+            if not bcrypt.check_password_hash(self.old_password.data, user.password):
+                self.old_password.errors.append('что-то не так с паролем')
 
     def validate_passwords(self, *args):
         if self.new_password1.data != self.new_password2.data:
             self.new_password1.errors.append('Пароли не совпадают')
+
+
+class ResetPasswordForm1(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email(), Length(min=10, max=30)],
+                        render_kw={"placeholder": "Введите email"})
+    submit = SubmitField('Отправить')
+
+    def validate_email(self, *args):
+        user = User.query.filter_by(email=self.email.data).first()
+        if user is None:
+            self.email.errors += 'Пользователь с таким адресом не найден'
+
+
+class ResetPasswordForm2(FlaskForm):
+    password1 = PasswordField('Пароль',
+                              validators=[DataRequired(), Length(min=1, max=20)],
+                              render_kw={"placeholder": "Введите пароль"})
+    password2 = PasswordField('Повторите пароль',
+                              validators=[DataRequired(), Length(min=1, max=20)],
+                              render_kw={"placeholder": "Введите пароль еще раз"})
+    submit = SubmitField('Завершить')
+
+    def validate_password(self, *args):
+        if self.password1.data != self.password2.data:
+            self.password1.errors += 'Пароли не совпадают'
