@@ -5,13 +5,13 @@ services:
     image: nouchka/sqlite3:latest
     stdin_open: true
     tty: true
-    #volumes:
-    #  - ./web/database/:/web/database/
+    volumes:
+      - ./app/database.db/:/app/database.db/
   app:
     build: .
     ports:
       - "5000:5000"
-    #volumes:
-    #   - ./web/database/:/web/database/
+    volumes:
+      - ./app/database.db/:/app/database.db/
     depends_on:
       - sqlite3

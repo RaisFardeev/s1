@@ -9,20 +9,21 @@ def fill_database(app: Flask, db: SQLAlchemy):
     with app.app_context():
         try:
             password = bcrypt.generate_password_hash('password')
-            u = User(name='User1', email='user1@mail.ru', password=password)
+            u = User(name='User1', email='user31@mail.ru', password=password)
             db.session.add(u)
             db.session.commit()
             u_id = db.session.query(User.id).where(User.name == 'User1').first().id
             for i in range(1, 10):
                 ad = Ad(creator_id=u_id, name=f'Ad{i}', description=f'description{i}', price=i)
                 db.session.add(ad)
-                ad_id = db.session.query(User.id).where(Ad.name == ad.name).first().id
-                photo = Photo(ad_id=ad_id, path='static/imgs/1.jpg')
+                db.session.commit()
+                ad_id = db.session.query(Ad.id).where(Ad.name == ad.name).first().id
+                photo = Photo(ad_id=ad.id, path='static/imgs/1.jpg')
                 db.session.add(photo)
                 db.session.commit()
             db.session.commit()
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
 
 def generate_link(url_redirect, app, id):

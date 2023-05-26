@@ -2,7 +2,7 @@ import os
 import requests
 from flask import request, render_template, url_for, redirect, session, make_response
 from . import app, db, bcrypt, \
-    github_id, github_secret, vk_id, vk_secret, mail, gmail_address
+    github_id, github_secret, vk_id, vk_secret, mail, gmail_address, gmail_password
 from .models import Ad, BoughtAd, LikedAd, User, Photo
 from .forms import *
 from .utils import generate_link, get_token_by_code, get_user_info
@@ -26,11 +26,14 @@ def login_via_oauth(app):
     Returns:
         redirect: A redirect response to the OAuth provider's authentication page.
     """
-    if app == 'vk':
-        link = generate_link(url_redirect_vk, app, vk_id)
-    else:
-        link = generate_link(url_redirect_github, app, github_id)
-    return redirect(link)
+    try:
+        if app == 'vk':
+            link = generate_link(url_redirect_vk, app, vk_id)
+        else:
+            link = generate_link(url_redirect_github, app, github_id)
+        return redirect(link)
+    except Exception:
+        pass
 
 
 @app.route('/vk_complete')
