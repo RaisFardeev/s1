@@ -15,3 +15,7 @@ services:
       - ./app/database.db/:/app/database.db/
     depends_on:
       - sqlite3
+networks:
+  web:
+    external:
+      name: web
